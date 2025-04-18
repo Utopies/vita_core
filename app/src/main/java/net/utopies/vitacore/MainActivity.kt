@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        requestPermissions(arrayOf(Manifest.permission.ACTIVITY_RECOGNITION), 101)
+        //requestPermissions(arrayOf(Manifest.permission.ACTIVITY_RECOGNITION), 101)
         // Запустить и привязать сервис
         Intent(this, StepCounterService::class.java).also { intent ->
             startForegroundService(intent) // Для долгой работы в фоне

@@ -14,7 +14,10 @@ import android.os.Binder
 import android.os.IBinder
 import android.widget.Toast
 import net.utopies.vitacore.R
+
+
 import java.lang.ref.WeakReference
+import kotlin.math.sqrt
 
 
 class StepCounterService : Service(), SensorEventListener {
@@ -22,20 +25,40 @@ class StepCounterService : Service(), SensorEventListener {
     public var countStep = 0
         private set(value){
             field = value
+            listeners.forEach { ref ->
+                ref.get()?.invoke(countStep)
+            }
+            listeners.removeAll { ref -> ref.get() == null }
         }
 
     private val listeners = mutableListOf<WeakReference<(Int) -> Unit>>()
     private lateinit var sensorManager: SensorManager
     private var stepDetectorSensor: Sensor? = null
 
+    private var accelerationValue = 0f
+    private var previousAcceleration = SensorManager.GRAVITY_EARTH
+    private var currentAcceleration = SensorManager.GRAVITY_EARTH
+    private var isStep = false
+
     override fun onSensorChanged(event: SensorEvent?) {
-        if (event != null){
-            if (event.sensor.type == Sensor.TYPE_STEP_DETECTOR){
-                countStep += event.values[0].toInt()
-                listeners.forEach { ref ->
-                    ref.get()?.invoke(countStep)
+        event?.let {
+            if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+                val x = event.values[0]
+                val y = event.values[1]
+                val z = event.values[2]
+
+                previousAcceleration = currentAcceleration
+                currentAcceleration = sqrt(x * x + y * y + z * z)
+
+                val delta = currentAcceleration - previousAcceleration
+                accelerationValue = accelerationValue * 0.9f + delta
+
+                if (accelerationValue > 3.5 && !isStep) { // Пороговое значение
+                    countStep++
+                    isStep = true
+                } else if (accelerationValue < 0) {
+                    isStep = false
                 }
-                listeners.removeAll { ref -> ref.get() == null }
             }
         }
     }
@@ -43,7 +66,7 @@ class StepCounterService : Service(), SensorEventListener {
     override fun onCreate() {
         super.onCreate()
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
-        stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR)
+        stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         stepDetectorSensor?.let {
             sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL)
         }

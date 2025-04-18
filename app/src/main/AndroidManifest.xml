@@ -28,6 +28,4 @@
         <service android:name=".StepCounter.StepCounterService" />
     </application>
 
-    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
-
 </manifest>
