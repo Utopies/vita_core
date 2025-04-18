@@ -1,0 +1,92 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1D3C18"> <!-- Изменён фон на тёмно-травянистый -->
+
+    <!-- Количество пройденных шагов (слева сверху) -->
+    <TextView
+        android:id="@+id/tv_step_count"
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:text="Шаги: 0"
+        android:textColor="#DB8707"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Кнопка остановки шагомера (справа сверху) -->
+    <Button
+        android:id="@+id/btn_stop"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="#81D907"
+        android:text="Стоп"
+        android:textColor="#1E9B0F"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_goal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_step_count"
+        app:layout_constraintTop_toTopOf="@id/tv_step_count" />
+
+    <!-- Целевое количество шагов в день (ниже количества шагов, слева) -->
+    <TextView
+        android:id="@+id/tv_goal"
+        android:layout_width="175dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Цель: 10000"
+        android:textColor="#DB8707"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_step_count" />
+
+    <!-- Диаграмма пройденных шагов за неделю (широкая, снизу) -->
+
+    <!-- Кнопка "Сделать зарядку" (ниже диаграммы, центр) -->
+
+    <View
+        android:id="@+id/chart_steps"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/btn_stop"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/tv_goal"
+        app:layout_constraintTop_toBottomOf="@id/tv_goal" />
+
+    <Button
+        android:id="@+id/btn_exercise"
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Сделать зарядку"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/chart_steps" />
+
+    <!-- Кнопка "Личный профиль" (ниже кнопки зарядки, центр) -->
+    <Button
+        android:id="@+id/btn_profile"
+        android:layout_width="175dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Личный профиль"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_exercise" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
