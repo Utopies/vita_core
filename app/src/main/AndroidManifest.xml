@@ -25,7 +25,12 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".StepCounter.StepCounterService" />
+        <service
+            android:name=".StepCounter.StepCounterService"
+            android:foregroundServiceType="health"
+            tools:ignore="ForegroundServicePermission" />
     </application>
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
 </manifest>

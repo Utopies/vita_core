@@ -17,10 +17,16 @@ class MainActivity : ComponentActivity() {
     private var stepCounterService: StepCounterService? = null
     private var isBound = false
     private lateinit var tvStepCount: TextView
+    private var lastUpdateTime: Long = 0
+    private val updateInterval = 1000L // 1 секунда
 
     private val updateSteps = { steps: Int ->
-        runOnUiThread {
-            tvStepCount.text = "Шаги: $steps"
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastUpdateTime >= updateInterval) {
+            lastUpdateTime = currentTime
+            runOnUiThread {
+                tvStepCount.text = "Шаги: $steps"
+            }
         }
     }
 
