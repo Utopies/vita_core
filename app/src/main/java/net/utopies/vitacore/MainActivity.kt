@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.Manifest
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.IBinder
 import android.widget.TextView
@@ -34,7 +35,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
-        //requestPermissions(arrayOf(Manifest.permission.ACTIVITY_RECOGNITION), 101)
         // Запустить и привязать сервис
         Intent(this, StepCounterService::class.java).also { intent ->
             startForegroundService(intent) // Для долгой работы в фоне
@@ -42,11 +42,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onStart() {
         super.onStart()
         setContentView(main_layout)
         tvStepCount = findViewById(R.id.tv_step_count)
         updateSteps.invoke(stepCounterService?.countStep ?: 0)
+
+        tvStepCount.text = "Шаги: ${stepCounterService?.countStep?: 0}"
     }
 
     override fun onDestroy() {

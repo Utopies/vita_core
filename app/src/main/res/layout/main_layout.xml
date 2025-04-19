@@ -2,9 +2,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1D3C18"> <!-- Изменён фон на тёмно-травянистый -->
+    android:background="#0C1F01"> <!-- Изменён фон на тёмно-травянистый -->
 
     <!-- Количество пройденных шагов (слева сверху) -->
+
+    <!-- Кнопка остановки шагомера (справа сверху) -->
     <TextView
         android:id="@+id/tv_step_count"
         android:layout_width="175dp"
@@ -18,7 +20,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Кнопка остановки шагомера (справа сверху) -->
     <Button
         android:id="@+id/btn_stop"
         android:layout_width="0dp"
@@ -55,38 +56,6 @@
 
     <!-- Кнопка "Сделать зарядку" (ниже диаграммы, центр) -->
 
-    <View
-        android:id="@+id/chart_steps"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/btn_stop"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/tv_goal"
-        app:layout_constraintTop_toBottomOf="@id/tv_goal" />
-
-    <Button
-        android:id="@+id/btn_exercise"
-        android:layout_width="175dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="Сделать зарядку"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/chart_steps" />
-
     <!-- Кнопка "Личный профиль" (ниже кнопки зарядки, центр) -->
-    <Button
-        android:id="@+id/btn_profile"
-        android:layout_width="175dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="Личный профиль"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btn_exercise" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

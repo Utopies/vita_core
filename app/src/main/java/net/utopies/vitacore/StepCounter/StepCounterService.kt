@@ -15,15 +15,16 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.IBinder
 import android.widget.Toast
-import androidx.core.app.NotificationCompat
 import net.utopies.vitacore.R
 
 
 import java.lang.ref.WeakReference
+import java.time.LocalDate
 import kotlin.math.sqrt
 
 
 class StepCounterService : Service(), SensorEventListener {
+
     @Volatile
     public var countStep = 0
         private set(value){
@@ -33,7 +34,10 @@ class StepCounterService : Service(), SensorEventListener {
             listeners.forEach { ref ->
                 ref.get()?.invoke(countStep)
             }
+            stepCounterState.addSteps(LocalDate.now(), field)
         }
+
+    private lateinit var stepCounterState: StepCounterState
 
     private val listeners = mutableListOf<WeakReference<(Int) -> Unit>>()
     private lateinit var notification: Notification
@@ -45,6 +49,8 @@ class StepCounterService : Service(), SensorEventListener {
     private var previousAcceleration = SensorManager.GRAVITY_EARTH
     private var currentAcceleration = SensorManager.GRAVITY_EARTH
     private var isStep = false
+
+
 
     override fun onSensorChanged(event: SensorEvent?) {
         event?.let {
@@ -78,7 +84,6 @@ class StepCounterService : Service(), SensorEventListener {
     override fun onCreate() {
         super.onCreate()
         notificationManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
         sensorHandlerThread = HandlerThread("SensorThread").apply { start() }
         sensorHandler = Handler(sensorHandlerThread.looper)
 
@@ -95,6 +100,9 @@ class StepCounterService : Service(), SensorEventListener {
         }
 
         setNotificate()
+
+        stepCounterState = StepCounterState(this)
+        countStep = stepCounterState.getSteps(LocalDate.now())
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -122,7 +130,7 @@ class StepCounterService : Service(), SensorEventListener {
         }
 
         notification = Notification.Builder(this, "stepmeter")
-            .setContentTitle("Вы прошли: ${countStep}")
+            .setContentTitle("Вы сделали: ${countStep} шага")
             .setSmallIcon(R.drawable.icon_meter_notification)
             .build()
 
