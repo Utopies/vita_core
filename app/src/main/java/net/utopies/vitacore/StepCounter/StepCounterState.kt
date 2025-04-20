@@ -7,7 +7,7 @@ import java.time.format.DateTimeFormatter
 
 class StepCounterState(private val context: Context) {
     //формат даты
-    val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd")
+    val formatter = DateTimeFormatter.ofPattern("yy.MM.dd")
 
     // Ключ для SharedPreferences
     private val prefs: SharedPreferences =

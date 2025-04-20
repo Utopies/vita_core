@@ -14,12 +14,12 @@ import android.os.Binder
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.IBinder
+import android.util.Log
 import android.widget.Toast
 import net.utopies.vitacore.R
-
-
 import java.lang.ref.WeakReference
 import java.time.LocalDate
+import kotlin.Exception
 import kotlin.math.sqrt
 
 
@@ -43,6 +43,9 @@ class StepCounterService : Service(), SensorEventListener {
     private lateinit var notification: Notification
     private lateinit var notificationManager: NotificationManager
 
+    private lateinit var sensorHandlerThread: HandlerThread
+    private lateinit var sensorHandler: Handler
+
     private lateinit var sensorManager: SensorManager
     private var stepDetectorSensor: Sensor? = null
     private var accelerationValue = 0f
@@ -50,36 +53,41 @@ class StepCounterService : Service(), SensorEventListener {
     private var currentAcceleration = SensorManager.GRAVITY_EARTH
     private var isStep = false
 
-
-
     override fun onSensorChanged(event: SensorEvent?) {
-        event?.let {
-            sensorHandler.post {
-                if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-                    val x = event.values[0]
-                    val y = event.values[1]
-                    val z = event.values[2]
+        try {
+            event?.let {
+                sensorHandler.post {
+                    try {
 
-                    previousAcceleration = currentAcceleration
-                    currentAcceleration = sqrt(x * x + y * y + z * z)
+                        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+                            val x = event.values[0]
+                            val y = event.values[1]
+                            val z = event.values[2]
 
-                    val delta = currentAcceleration - previousAcceleration
-                    accelerationValue = accelerationValue * 0.9f + delta
+                            previousAcceleration = currentAcceleration
+                            currentAcceleration = sqrt(x * x + y * y + z * z)
 
-                    if (accelerationValue > 3.5 && !isStep) { // Пороговое значение
-                        countStep++
-                        isStep = true
-                    } else if (accelerationValue < 0) {
-                        isStep = false
+                            val delta = currentAcceleration - previousAcceleration
+                            accelerationValue = accelerationValue * 0.9f + delta
+
+                            if (accelerationValue > 3.5 && !isStep) { // Пороговое значение
+                                countStep++
+                                isStep = true
+                            } else if (accelerationValue < 0) {
+                                isStep = false
+                            }
+                        }
                     }
-
+                    catch (e: Exception){
+                        Log.e("StepCounter", "Handler error", e)
+                    }
                 }
             }
         }
+        catch (e: Exception) {
+            Log.e("StepCounter", "Handler error", e)
+        }
     }
-
-    private lateinit var sensorHandlerThread: HandlerThread
-    private lateinit var sensorHandler: Handler
 
     override fun onCreate() {
         super.onCreate()
@@ -106,6 +114,10 @@ class StepCounterService : Service(), SensorEventListener {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (stepDetectorSensor == null) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
         setNotificate()
         return super.onStartCommand(intent, flags, startId)
     }
@@ -118,16 +130,15 @@ class StepCounterService : Service(), SensorEventListener {
 
     @SuppressLint("ForegroundServiceType")
     private fun setNotificate() {
-        if (notificationManager.getNotificationChannel("stepmeter") == null) {
-            val channel = NotificationChannel(
-                "stepmeter",
-                "Шагомер",
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = "Канал для уведомлений шагомера"
-            }
-            notificationManager.createNotificationChannel(channel)
+        val channel = NotificationChannel(
+            "stepmeter",
+            "Шагомер",
+            NotificationManager.IMPORTANCE_LOW
+        ).apply {
+            description = "Канал для уведомлений шагомера"
         }
+        notificationManager.createNotificationChannel(channel)
+
 
         notification = Notification.Builder(this, "stepmeter")
             .setContentTitle("Вы сделали: ${countStep} шага")

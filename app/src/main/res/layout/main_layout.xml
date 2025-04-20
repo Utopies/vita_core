@@ -1,18 +1,18 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0C1F01"> <!-- Изменён фон на тёмно-травянистый -->
+    android:background="#0C1F01"
+    tools:ignore="MissingClass"> <!-- Изменён фон на тёмно-травянистый -->
 
     <!-- Количество пройденных шагов (слева сверху) -->
-
-    <!-- Кнопка остановки шагомера (справа сверху) -->
     <TextView
         android:id="@+id/tv_step_count"
         android:layout_width="175dp"
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:text="Шаги: 0"
         android:textColor="#DB8707"
         android:textSize="24sp"
@@ -20,6 +20,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- Кнопка остановки шагомера (справа сверху) -->
     <Button
         android:id="@+id/btn_stop"
         android:layout_width="0dp"
@@ -34,7 +35,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/tv_goal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tv_step_count"
-        app:layout_constraintTop_toTopOf="@id/tv_step_count" />
+        app:layout_constraintTop_toTopOf="@+id/tv_step_count" />
 
     <!-- Целевое количество шагов в день (ниже количества шагов, слева) -->
     <TextView
@@ -53,6 +54,16 @@
         app:layout_constraintTop_toBottomOf="@id/tv_step_count" />
 
     <!-- Диаграмма пройденных шагов за неделю (широкая, снизу) -->
+    <com.github.mikephil.charting.charts.BarChart
+        android:id="@+id/dailyBarChart"
+        android:layout_width="359dp"
+        android:layout_height="250dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_goal" />
 
     <!-- Кнопка "Сделать зарядку" (ниже диаграммы, центр) -->
 
