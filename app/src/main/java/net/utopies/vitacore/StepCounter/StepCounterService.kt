@@ -68,9 +68,9 @@ class StepCounterService : Service(), SensorEventListener {
                             currentAcceleration = sqrt(x * x + y * y + z * z)
 
                             val delta = currentAcceleration - previousAcceleration
-                            accelerationValue = accelerationValue * 0.9f + delta
+                            accelerationValue = accelerationValue * 0.91f + delta
 
-                            if (accelerationValue > 3.5 && !isStep) { // Пороговое значение
+                            if (accelerationValue > 3.83 && !isStep) { // Пороговое значение
                                 countStep++
                                 isStep = true
                             } else if (accelerationValue < 0) {

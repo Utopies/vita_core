@@ -27,24 +27,25 @@ import net.utopies.vitacore.StepCounter.StepCounterService
 import net.utopies.vitacore.StepCounter.StepCounterState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity(), View.OnClickListener {
     private var stepCounterService: StepCounterService? = null
     private var isBoundStepServer = false
     private var isWorkedStepServer = false
-    private lateinit var tvStepCount: TextView
-    private var lastUpdateTime: Long = 0
-    private val updateInterval = 1000L // 1 секунда
     private lateinit var btnStop: Button
     private lateinit var stepCounterState: StepCounterState
 
+    @SuppressLint("SetTextI18n")
     private val updateSteps = { steps: Int ->
-        val currentTime = System.currentTimeMillis()
-        if (currentTime - lastUpdateTime >= updateInterval) {
-            lastUpdateTime = currentTime
-            runOnUiThread {
-                tvStepCount.text = "Шаги: $steps"
-            }
+        runOnUiThread {
+            findViewById<TextView>(R.id.tv_step_count).text = "Шаги: $steps"
+            findViewById<TextView>(R.id.tv_distance).text =
+                "Км: ${"%.2f".format(steps * 0.00060F)}"
+            findViewById<TextView>(R.id.tv_calories).text =
+                "Ккал: ${(steps * 0.00060F * 45).roundToInt()}"
+
+            updateChart()
         }
     }
 
@@ -59,16 +60,10 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
         stepCounterState = StepCounterState(this)
 
         setContentView(main_layout)
-        tvStepCount = findViewById(R.id.tv_step_count)
         buttonRegister()
         inintDailyStepChart()
 
-        if (isBoundStepServer && isWorkedStepServer) {
-            updateSteps.invoke(stepCounterService?.countStep ?: 0)
-            tvStepCount.text = "Шаги: ${stepCounterService?.countStep ?: 0}"
-        } else {
-            tvStepCount.text = "Шаги: 0"
-        }
+        findViewById<TextView>(R.id.tv_step_count).text = "Шаги: [ нажмите Start]"
     }
 
     override fun onDestroy() {
@@ -91,15 +86,16 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
         }
     }
 
-    fun getLast30Days() : List<Float> {
-        var allDailyValues: ArrayList<Float> = arrayListOf( )
+    fun getLast30Days(): List<Float> {
+        val allDailyValues = ArrayList<Float>()
         val nowDate = LocalDate.now()
 
-        for (n in 0L..29L){
-            allDailyValues.add(stepCounterState.getSteps(nowDate.minusDays(-n)).toFloat())
+        for (n in 0..29) {
+            val date = nowDate.minusDays(29 - n.toLong())
+            allDailyValues.add(stepCounterState.getSteps(date).toFloat())
         }
 
-        return allDailyValues.reversed()
+        return allDailyValues // Убрали .reversed()
     }
 
     private fun inintDailyStepChart() {
@@ -139,8 +135,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
             }
 
             axisRight.apply {
-                textSize = 14f
-                textColor = color
+                isEnabled = false // Отключаем правую ось
             }
 
             legend.apply {
@@ -175,7 +170,7 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
             val today = LocalDate.now()
             val dateFormatter = DateTimeFormatter.ofPattern("dd.MM")
 
-            for (i in 0..dailyValues.size) {
+            for (i in 0 until dailyValues.size) { // Исправлено на 0 until
                 val date = today.minusDays((dailyValues.size - i - 1).toLong())
                 dates.add(date.format(dateFormatter))
             }
@@ -189,8 +184,25 @@ class MainActivity : ComponentActivity(), View.OnClickListener {
         }
     }
 
-    private fun updataChart(){
+    private fun updateChart() {
+        val chart = findViewById<BarChart>(R.id.dailyBarChart)
+        val allDailyValues = getLast30Days()
 
+        val newEntries = allDailyValues.mapIndexed { index, value ->
+            BarEntry(index.toFloat(), value)
+        }
+
+        val newDataSet = BarDataSet(newEntries, "Daily Data").apply {
+            valueTextSize = 14f
+            valueTextColor = 0xFFDB8707.toInt()
+        }
+
+        chart.data = BarData(newDataSet).apply {
+            barWidth = 0.9f
+        }
+
+        configureXAxisLabels(chart, allDailyValues)
+        chart.invalidate()
     }
 
     private fun buttonRegister(){
