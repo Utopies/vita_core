@@ -1,15 +1,33 @@
+### Rider ###
+# Игнорировать ВСЮ папку .idea (лучше чем перечислять отдельно)
+.idea/
 *.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
+
+### Общие системные файлы ###
 .DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+Thumbs.db
+
+### Сборка ###
+[Bb]in/
+[Oo]bj/
+/build/
+/captures/
+*.binlog
+*.log
+*.nupkg
+
+### Android ###
+.gradle/
 local.properties
+.externalNativeBuild
+.cxx/
+android-app/  # Если используется подпапка для Android
+
+### Пользовательские файлы IDE ###
+*.user
+*.userprefs
+*.suo
+
+### Собственные управления ###
+/PushGH.bat
+/initGH.bat
